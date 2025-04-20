@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+openai
+python-dotenv
+azure-data-tables
+azure-identity
+pydantic
+requests 

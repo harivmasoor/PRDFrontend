@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  /* Re-add variables for 8090 Dark Theme */
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 10;
+  --background-end-rgb: 0, 0, 0;
+  --accent-color: 0, 255, 255; /* Cyan */
+  --accent-color-rgb: var(--accent-color);
+
+  /* Default light theme variables (likely overridden by body style below) */
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Ensure dark mode uses our variables if needed, though body style might override */
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 10, 10, 10;
+    --background-end-rgb: 0, 0, 0;
+    /* Original dark theme variables */
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  /* Apply the 8090 dark theme using CSS variables */
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    ) rgb(var(--background-start-rgb));
+  /* Reset font-family if needed, or use Tailwind defaults */
+  /* font-family: Arial, Helvetica, sans-serif; */
+}
