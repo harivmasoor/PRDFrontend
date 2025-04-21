@@ -23,17 +23,18 @@ export default function PrdView({ markdown, isLoading }: PrdViewProps) {
                   // Apply styling via prose-invert, customize links etc.
                   components={{
                         // Customize heading styles further if prose-lg isn't enough
-                        h1: ({node, ...props}) => <h1 {...props} className="text-2xl font-bold mb-6 text-accent"/>, // Example: Make H1 accent color
-                        h2: ({node, ...props}) => <h2 {...props} className="text-xl font-semibold mt-8 mb-4 pb-1 border-b border-dark-700"/>,
-                        h3: ({node, ...props}) => <h3 {...props} className="text-lg font-semibold mt-6 mb-3"/>,
+                        h1: ({ ...props}) => <h1 {...props} className="text-2xl font-bold mb-6 text-accent"/>,
+                        h2: ({ ...props}) => <h2 {...props} className="text-xl font-semibold mt-8 mb-4 pb-1 border-b border-dark-700"/>,
+                        h3: ({ ...props}) => <h3 {...props} className="text-lg font-semibold mt-6 mb-3"/>,
                         // Customize list spacing
-                        ul: ({node, ...props}) => <ul {...props} className="space-y-2"/>,
-                        ol: ({node, ...props}) => <ol {...props} className="space-y-2"/>,
+                        ul: ({ ...props}) => <ul {...props} className="space-y-2"/>,
+                        ol: ({ ...props}) => <ol {...props} className="space-y-2"/>,
                         // Link styling
-                        a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline"/>,
+                        a: ({ ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline"/>,
                         // Code block styling
-                        pre: ({node, ...props}) => <pre {...props} className="bg-dark-900 p-3 rounded text-sm" />,
-                        code: ({node, inline, className, children, ...props }) => {
+                        pre: ({ ...props}) => <pre {...props} className="bg-dark-900 p-3 rounded text-sm" />,
+                        code: (props: { inline?: boolean; className?: string; children?: React.ReactNode }) => {
+                            const { inline, className, children } = props;
                             const match = /language-(\w+)/.exec(className || '');
                             return !inline && match ? (
                               // Block code
@@ -44,7 +45,7 @@ export default function PrdView({ markdown, isLoading }: PrdViewProps) {
                             );
                         },
                          // Improve paragraph spacing
-                         p: ({node, ...props}) => <p {...props} className="my-3 leading-relaxed"/>
+                         p: ({ ...props}) => <p {...props} className="my-3 leading-relaxed"/>
                   }}
                 >
                     {markdown}

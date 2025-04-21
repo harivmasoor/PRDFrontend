@@ -1,7 +1,7 @@
 'use client'; // Mark this component as a Client Component
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChatInfo, ChatSessionDetail, ChatMessage } from '@/types/chat';
+import { ChatInfo, ChatMessage } from '@/types/chat';
 import { apiClient } from '@/lib/apiClient';
 import ChatList from '@/components/ChatList';
 import ChatView from '@/components/ChatView';
@@ -16,6 +16,7 @@ export default function Home() {
     const [isLoadingChats, setIsLoadingChats] = useState<boolean>(true);
     const [isLoadingChatDetails, setIsLoadingChatDetails] = useState<boolean>(false);
     const [isSendingMessage, setIsSendingMessage] = useState<boolean>(false);
+    const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
 
     // --- Data Fetching Callbacks ---
 
@@ -29,9 +30,11 @@ export default function Home() {
             // if (!selectedChatId && chatList.length > 0) {
             //     setSelectedChatId(chatList[0].id);
             // }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch chats:', error);
-            toast.error(`Failed to load chats: ${error.message}`);
+            // Type guard
+            const message = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast.error(`Failed to load chats: ${message}`);
         } finally {
             setIsLoadingChats(false);
         }
@@ -53,9 +56,11 @@ export default function Home() {
             const prdData = await apiClient.getPrdMarkdown(chatId);
             setCurrentPrdMarkdown(prdData.markdown || ''); // Use fetched markdown directly
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Failed to fetch details for chat ${chatId}:`, error);
-            toast.error(`Failed to load chat details: ${error.message}`);
+            // Type guard
+            const message = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast.error(`Failed to load chat details: ${message}`);
             setSelectedChatId(null); // Deselect if details failed to load
         } finally {
             setIsLoadingChatDetails(false);
@@ -86,15 +91,21 @@ export default function Home() {
     };
 
     const handleCreateChat = async () => {
+        if (isCreatingChat) return; // Prevent double clicks
+        setIsCreatingChat(true); // <-- Set loading true
         try {
             // Optionally prompt for name or use default from backend
             const newChat = await apiClient.createChat(); // Uses default name
             toast.success(`Chat "${newChat.name}" created!`);
             setChats(prevChats => [newChat, ...prevChats]); // Add to top of list
             setSelectedChatId(newChat.id); // Select the new chat immediately
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to create chat:', error);
-            toast.error(`Failed to create chat: ${error.message}`);
+            // Type guard
+            const message = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast.error(`Failed to create chat: ${message}`);
+        } finally {
+            setIsCreatingChat(false); // <-- Set loading false regardless of outcome
         }
     };
 
@@ -112,9 +123,11 @@ export default function Home() {
                     chat.id === chatId ? { ...chat, name: newName } : chat
                 )
             );
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Failed to rename chat ${chatId}:`, error);
-            toast.error(`Failed to rename chat: ${error.message}`);
+            // Type guard
+            const message = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast.error(`Failed to rename chat: ${message}`);
         }
     };
 
@@ -133,9 +146,11 @@ export default function Home() {
             if (selectedChatId === chatId) {
                 setSelectedChatId(null);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(`Failed to delete chat ${chatId}:`, error);
-            toast.error(`Failed to delete chat: ${error.message}`);
+            // Type guard
+            const message = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast.error(`Failed to delete chat: ${message}`);
         }
     };
 
@@ -162,15 +177,19 @@ export default function Home() {
             try {
                  const prdData = await apiClient.getPrdMarkdown(currentChatId);
                  setCurrentPrdMarkdown(prdData.markdown || ''); // Update PRD preview
-            } catch (prdError: any) {
+            } catch (prdError: unknown) {
                  console.error('Failed to fetch updated PRD markdown:', prdError);
-                 toast.error(`Failed to update PRD preview: ${prdError.message}`);
+                 // Type guard
+                 const message = prdError instanceof Error ? prdError.message : 'An unknown error occurred';
+                 toast.error(`Failed to update PRD preview: ${message}`);
                  // Keep the previous PRD markdown displayed if fetch fails
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to send message or get response:', error);
-            toast.error(`Failed to send message: ${error.message}`);
+            // Type guard
+            const message = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast.error(`Failed to send message: ${message}`);
             // Rollback optimistic update on error
             setCurrentChatMessages(prev => prev.slice(0, -1));
              // Do NOT try to fetch PRD if sending failed
@@ -194,6 +213,7 @@ export default function Home() {
                     onRenameChat={handleRenameChat}
                     onDeleteChat={handleDeleteChat}
                     isLoading={isLoadingChats}
+                    isCreatingChat={isCreatingChat}
                 />
             </div>
 

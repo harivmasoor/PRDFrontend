@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "rm -rf .next node_modules && npm install && npm run build && rm -f deploy.zip && cd .next/standalone && zip -r ../../deploy.zip . && cd ../.. && az webapp deploy --name 8090frontend --resource-group 8090Solutions --src-path deploy.zip --type zip --async true"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

@@ -22,7 +22,7 @@ async function fetchApi<T>(url: string, options: RequestInit = {}): Promise<T> {
             let errorData;
             try {
                 errorData = await response.json();
-            } catch (e) {
+            } catch {
                 // If response is not JSON or empty
                 errorData = { detail: response.statusText || 'Unknown server error' };
             }

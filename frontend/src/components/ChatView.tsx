@@ -51,7 +51,8 @@ export default function ChatView({
              components={{
                 // Customize rendering of elements if needed, e.g., links, code blocks
                 // Example: Style code blocks
-                code({ node, inline, className, children, ...props }) {
+                code(props: { inline?: boolean; className?: string; children?: React.ReactNode }) {
+                  const { inline, className, children } = props;
                   const match = /language-(\w+)/.exec(className || '');
                   return !inline && match ? (
                     <pre className="bg-gray-100 dark:bg-gray-700 p-2 rounded my-2 overflow-x-auto"><code className={className} {...props}>{children}</code></pre>

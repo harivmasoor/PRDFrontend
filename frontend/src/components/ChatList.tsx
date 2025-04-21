@@ -13,6 +13,7 @@ interface ChatListProps {
     onRenameChat: (chatId: string, newName: string) => Promise<void>; // Make async to handle potential errors
     onDeleteChat: (chatId: string, chatName: string) => Promise<void>; // Add delete handler prop
     isLoading: boolean;
+    isCreatingChat: boolean; // <-- Add new prop
 }
 
 export default function ChatList({ 
@@ -22,7 +23,8 @@ export default function ChatList({
     onCreateChat,
     onRenameChat,
     onDeleteChat, // Destructure the new prop
-    isLoading
+    isLoading,
+    isCreatingChat // <-- Destructure new prop
 }: ChatListProps) {
     const [editingChatId, setEditingChatId] = useState<string | null>(null);
     const [renameValue, setRenameValue] = useState<string>('');
@@ -46,7 +48,7 @@ export default function ChatList({
             await onRenameChat(editingChatId, renameValue.trim());
             setEditingChatId(null);
             setRenameValue('');
-        } catch (error) {
+        } catch {
             // Error is already handled and toasted in the parent component (page.tsx)
             // We might still want to keep the input open on error, or close it?
             // Let's close it for now.
@@ -69,8 +71,9 @@ export default function ChatList({
                 <h2 className="text-lg font-semibold text-gray-100">PRD Chats</h2>
                 <button 
                     onClick={onCreateChat} 
-                    className="p-1 text-gray-200 hover:text-accent transition-colors"
+                    className="p-1 text-gray-200 hover:text-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Create New Chat"
+                    disabled={isCreatingChat}
                 >
                     <PlusCircleIcon className="h-6 w-6" />
                 </button>
@@ -99,7 +102,7 @@ export default function ChatList({
                                             value={renameValue}
                                             onChange={(e) => setRenameValue(e.target.value)}
                                             onKeyDown={handleKeyDown}
-                                            onBlur={handleCancelRename} // Cancel if losing focus without Enter/Escape
+                                            onBlur={handleCancelRename}
                                             className="flex-grow bg-dark-900 border border-accent rounded px-2 py-1 text-sm mr-2 text-gray-100"
                                             autoFocus
                                         />
